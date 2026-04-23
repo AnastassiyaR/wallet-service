@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.walletservice.repository.AccountRepository">
+
+    <resultMap id="AccountResultMap" type="com.walletservice.domain.Account">
+        <id property="id" column="id"/>
+        <result property="customerId" column="customer_id"/>
+        <result property="country" column="country"/>
+        <result property="createdAt" column="created_at"/>
+        <collection property="balances"
+                    ofType="com.walletservice.domain.Balance"
+                    column="id"
+                    select="com.walletservice.repository.BalanceRepository.getBalancesByAccountId"/>
+    </resultMap>
+
+    <insert id="saveAccount" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO account (customer_id, country)
+        VALUES (#{customerId}, #{country})
+    </insert>
+
+    <select id="getAccountById" resultMap="AccountResultMap">
+        SELECT * FROM account WHERE id = #{id}
+    </select>
+
+</mapper>

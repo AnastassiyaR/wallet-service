@@ -1,0 +1,13 @@
+package com.walletservice.exception;
+
+
+public enum ErrorCode {
+    ACCOUNT_NOT_FOUND,
+    INVALID_CURRENCY,
+    INVALID_DIRECTION,
+    INVALID_AMOUNT,
+    INSUFFICIENT_FUNDS,
+    DESCRIPTION_MISSING,
+    UNEXPECTED_ERROR,
+    INVALID_PARAMETER
+}

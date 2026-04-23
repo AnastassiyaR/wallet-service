@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.walletservice.repository.BalanceRepository">
+
+    <insert id="insertBalance" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO balance (account_id, currency, available_amount)
+        VALUES (#{accountId}, #{currency}, #{availableAmount})
+    </insert>
+
+    <!--
+        Atomic deposit: adds amount directly in SQL and returns the updated row.
+        No SELECT FOR UPDATE needed — the UPDATE itself is atomic.
+    -->
+    <select id="deposit" resultType="com.walletservice.domain.Balance">
+        UPDATE balance
+        SET available_amount = available_amount + #{amount}
+        WHERE account_id = #{accountId}
+          AND currency = #{currency}
+            RETURNING *
+    </select>
+
+    <!--
+        Atomic withdrawal: subtracts amount only if funds are sufficient.
+        The CHECK constraint (available_amount >= 0) acts as a safety net,
+        but the WHERE clause prevents the update from happening at all,
+        so we can distinguish "not found" from "insufficient funds" by
+        checking whether the result is null.
+    -->
+    <select id="withdraw" resultType="com.walletservice.domain.Balance">
+        UPDATE balance
+        SET available_amount = available_amount - #{amount}
+        WHERE account_id = #{accountId}
+          AND currency = #{currency}
+          AND available_amount >= #{amount}
+            RETURNING *
+    </select>
+
+    <select id="getBalancesByAccountId" resultType="com.walletservice.domain.Balance">
+        SELECT * FROM balance WHERE account_id = #{accountId}
+    </select>
+
+</mapper>
