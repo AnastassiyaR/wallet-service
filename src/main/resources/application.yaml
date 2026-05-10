@@ -1,6 +1,6 @@
 spring:
   application:
-    name: account-service
+    name: wallet-service
 
   datasource:
     url: jdbc:postgresql://localhost:5432/accountdb
